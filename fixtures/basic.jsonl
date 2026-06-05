@@ -1,0 +1,2 @@
+{"timestamp":"2026-01-01T00:00:00.000Z","direction":"client","method":"tools/list","id":1,"body":{"jsonrpc":"2.0","id":1,"method":"tools/list"}}
+{"timestamp":"2026-01-01T00:00:00.100Z","direction":"server","id":1,"body":{"jsonrpc":"2.0","id":1,"result":{"tools":[]}}}

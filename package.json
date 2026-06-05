@@ -4,7 +4,7 @@
   "description": "Record and replay MCP stdio JSON-RPC sessions as deterministic JSONL fixture cassettes.",
   "type": "module",
   "bin": {
-    "mcpcassette": "./dist/cli.js"
+    "mcpcassette": "./dist/src/cli.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -17,7 +17,8 @@
   "files": [
     "dist",
     "fixtures",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc",
@@ -35,8 +36,7 @@
     "cli"
   ],
   "author": "Roger Chappel",
-  "license": "MIT"
-  ,
+  "license": "MIT",
   "dependencies": {
     "commander": "^12.1.0"
   },
@@ -47,5 +47,13 @@
   },
   "engines": {
     "node": ">=20"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rogerchappel/mcpcassette.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rogerchappel/mcpcassette/issues"
+  },
+  "homepage": "https://github.com/rogerchappel/mcpcassette#readme"
 }
