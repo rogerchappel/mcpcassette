@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readCassette, summarizeCassette } from "./index.js";
+import { readCassette, summarizeCassette, type CassetteSummary } from "./index.js";
 
 async function main(argv = process.argv.slice(2)) {
   const [command, path, ...rest] = argv;
@@ -30,7 +30,7 @@ async function main(argv = process.argv.slice(2)) {
   return 0;
 }
 
-function parseFormat(args) {
+function parseFormat(args: string[]): "text" | "json" {
   const index = args.findIndex((arg) => arg === "--format" || arg === "-f");
   const value = index >= 0 ? args[index + 1] : "text";
   if (value !== "text" && value !== "json") {
@@ -39,7 +39,7 @@ function parseFormat(args) {
   return value;
 }
 
-function renderText(summary) {
+function renderText(summary: CassetteSummary): string {
   const methods = Object.entries(summary.methods)
     .sort(([left], [right]) => left.localeCompare(right))
     .map(([method, count]) => `- ${method}: ${count}`);
