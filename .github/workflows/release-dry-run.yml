@@ -29,8 +29,7 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: |
-          corepack enable
-          pnpm install --frozen-lockfile
+          npm install
       - name: Install ReleaseBox
         run: |
           set -euo pipefail
@@ -40,7 +39,7 @@ jobs:
       - name: ReleaseBox readiness check
         run: node /tmp/releasebox/bin/releasebox.js check .
       - name: Run release checks
-        run: pnpm run release:check
+        run: npm run release:check
       - name: Release notes preview
         run: |
           node /tmp/releasebox/bin/releasebox.js notes . > release-notes-preview.md
