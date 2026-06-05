@@ -49,3 +49,14 @@ These links assume this README has been copied to the generated repository root.
 ## License
 
 MIT
+
+## Verification
+
+Run these checks before opening a PR or publishing a release:
+
+```bash
+pnpm test
+pnpm run smoke
+pnpm run package:smoke
+pnpm run release:check
+```
