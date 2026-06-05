@@ -4,7 +4,7 @@
   "description": "Record and replay MCP stdio JSON-RPC sessions as deterministic JSONL fixture cassettes.",
   "type": "module",
   "bin": {
-    "mcpcassette": "./dist/cli.js"
+    "mcpcassette": "./dist/src/cli.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
