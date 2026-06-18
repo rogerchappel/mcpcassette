@@ -65,6 +65,9 @@ npm run release:check
 dry-run package check. `scripts/validate.sh` remains available as a local
 repository hygiene wrapper.
 
+The package metadata points at the public GitHub repository so npm and generated
+provenance link back to the source.
+
 ## Limitations
 
 - mcpcassette operates on local JSONL cassette files and does not upload session
