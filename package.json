@@ -55,10 +55,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rogerchappel/@rogerchappel/mcpcassette.git"
+    "url": "git+https://github.com/rogerchappel/mcpcassette.git"
   },
   "bugs": {
-    "url": "https://github.com/rogerchappel/@rogerchappel/mcpcassette/issues"
+    "url": "https://github.com/rogerchappel/mcpcassette/issues"
   },
-  "homepage": "https://github.com/rogerchappel/@rogerchappel/mcpcassette#readme"
+  "homepage": "https://github.com/rogerchappel/mcpcassette#readme"
 }
