@@ -45,8 +45,10 @@ belong in follow-up milestones.
 
 The npm package allowlist includes the runtime files plus the public support
 documents needed for release review: `README.md`, `LICENSE`, `SECURITY.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`.
-Run `npm run package:smoke` or `npm pack --dry-run` before publishing to
-confirm those files are still present in the tarball.
+Run `npm run package:smoke` before publishing to confirm those files are still
+present in the tarball. The package smoke builds the project, runs
+`npm pack --dry-run`, and fails if required runtime or support files are missing
+from the npm file list.
 
 ## Verification
 
@@ -62,7 +64,7 @@ npm run release:check
 ```
 
 `release:check` runs type-checking, tests, build, fixture smoke coverage, and a
-dry-run package check. `scripts/validate.sh` remains available as a local
+package contents assertion. `scripts/validate.sh` remains available as a local
 repository hygiene wrapper.
 
 The package metadata points at the public GitHub repository so npm and generated
