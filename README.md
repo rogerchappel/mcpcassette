@@ -69,6 +69,16 @@ repository hygiene wrapper.
 
 The package metadata points at the public GitHub repository so npm and generated
 provenance link back to the source.
+## CLI Help Smoke
+
+Confirm the packaged command starts and prints its help text before relying on a release tarball or downstream automation:
+
+```bash
+npm run build
+node ./dist/src/cli.js --help
+```
+
+The command should exit successfully, print the available options, and avoid reading project files or contacting external services.
 
 ## Limitations
 
