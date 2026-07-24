@@ -52,6 +52,15 @@ from the npm file list.
 
 ## Verification
 
+This repository uses pnpm 9 and `pnpm-lock.yaml` as its canonical package
+manager and lockfile. Enable the version declared in `package.json`, then use a
+frozen install so local and release builds resolve the same dependencies:
+
+```sh
+corepack enable
+pnpm install --frozen-lockfile
+```
+
 Run the release-readiness checks before opening a PR or publishing a release:
 
 ```sh

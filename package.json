@@ -2,6 +2,7 @@
   "name": "@rogerchappel/mcpcassette",
   "version": "0.1.0",
   "description": "Record and replay MCP stdio JSON-RPC sessions as deterministic JSONL fixture cassettes.",
+  "packageManager": "pnpm@9.15.0",
   "type": "module",
   "bin": {
     "mcpcassette": "./dist/src/cli.js"
