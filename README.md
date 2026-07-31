@@ -38,6 +38,11 @@ Write the same summary as JSON for a scripted check:
 node dist/src/cli.js summarize fixtures/basic.jsonl --format json > /tmp/mcpcassette-summary.json
 ```
 
+The format option accepts `text` (the default) or `json`, using either
+`--format` or `-f`. The command accepts exactly one cassette path and at most
+one format option; unknown flags, extra arguments, missing values, and repeated
+format options are errors.
+
 The current CLI reads existing cassette files; recording and replay orchestration
 belong in follow-up milestones.
 

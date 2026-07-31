@@ -31,12 +31,32 @@ async function main(argv = process.argv.slice(2)) {
 }
 
 function parseFormat(args: string[]): "text" | "json" {
-  const index = args.findIndex((arg) => arg === "--format" || arg === "-f");
-  const value = index >= 0 ? args[index + 1] : "text";
-  if (value !== "text" && value !== "json") {
-    throw new Error("--format must be text or json");
+  let format: "text" | "json" = "text";
+  let formatSeen = false;
+
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index];
+    if (arg !== "--format" && arg !== "-f") {
+      throw new Error(`unexpected argument ${arg}`);
+    }
+    if (formatSeen) {
+      throw new Error("format option may only be specified once");
+    }
+
+    const value = args[index + 1];
+    if (value === undefined || value.startsWith("-")) {
+      throw new Error(`${arg} requires text or json`);
+    }
+    if (value !== "text" && value !== "json") {
+      throw new Error(`${arg} must be text or json`);
+    }
+
+    format = value;
+    formatSeen = true;
+    index += 1;
   }
-  return value;
+
+  return format;
 }
 
 function renderText(summary: CassetteSummary): string {
@@ -58,7 +78,7 @@ function renderText(summary: CassetteSummary): string {
 }
 
 function helpText() {
-  return `mcpcassette\n\nUsage:\n  mcpcassette summarize <cassette.jsonl> [--format text|json]\n`;
+  return `mcpcassette\n\nUsage:\n  mcpcassette summarize <cassette.jsonl> [--format text|json]\n  mcpcassette summarize <cassette.jsonl> [-f text|json]\n`;
 }
 
 main().then((code) => {
