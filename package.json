@@ -28,6 +28,7 @@
   "scripts": {
     "build": "tsc",
     "check": "tsc --noEmit",
+    "pretest": "npm run build",
     "test": "node --import tsx --test tests/*.test.ts",
     "smoke": "bash scripts/smoke.sh",
     "package:smoke": "npm run build && node scripts/package-smoke.mjs",
