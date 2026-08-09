@@ -46,6 +46,20 @@ format options are errors.
 The current CLI reads existing cassette files; recording and replay orchestration
 belong in follow-up milestones.
 
+## Cassette schema
+
+Each non-empty JSONL line is an object with an ISO-style `timestamp`, a
+`direction` of `client` or `server`, and a JSON-RPC 2.0 `body`. The body is the
+canonical source for `method` and `id`. Writers may repeat `method` or `id` on
+the outer object for compatibility, but any repeated value must exactly match
+the body or parsing fails with the line number.
+
+The body must be a JSON-RPC 2.0 request/notification (`method`, optional object
+or array `params`, and an optional string, number, or null `id`) or response (an
+`id` and exactly one of `result` or `error`). An error object requires an integer
+`code` and string `message`. Body-only entries are supported and are preferred
+for hand-authored fixtures.
+
 ## Package contents
 
 The npm package allowlist includes the runtime files plus the public support
