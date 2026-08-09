@@ -1,6 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 const cli = new URL("../dist/src/cli.js", import.meta.url);
 const fixture = new URL("../fixtures/basic.jsonl", import.meta.url);
@@ -53,4 +56,16 @@ test("built CLI rejects duplicate and conflicting format options", () => {
     assert.equal(result.stdout, "");
     assert.equal(result.stderr, "mcpcassette: format option may only be specified once\n");
   }
+});
+
+test("built CLI reports the line for malformed JSON-RPC bodies", () => {
+  const directory = mkdtempSync(join(tmpdir(), "mcpcassette-cli-"));
+  const path = join(directory, "invalid.jsonl");
+  writeFileSync(path, '\n{"timestamp":"2026-01-01T00:00:00.000Z","direction":"client","body":{"method":"tools/list"}}\n');
+
+  const result = spawnSync(process.execPath, [cli.pathname, "summarize", path], { encoding: "utf8" });
+  assert.equal(result.status, 1);
+  assert.equal(result.stdout, "");
+  assert.equal(result.stderr, 'mcpcassette: line 2: JSON-RPC body jsonrpc must be "2.0"\n');
+  rmSync(directory, { recursive: true });
 });

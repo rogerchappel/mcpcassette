@@ -26,12 +26,30 @@ export function parseCassetteLine(line: string, lineNumber: number): CassetteEnt
     throw new Error(`line ${lineNumber}: missing JSON-RPC body`);
   }
 
+  const body = value.body as JsonRpcMessage;
+  validateJsonRpcBody(body, lineNumber);
+  const method = typeof body.method === "string" ? body.method : undefined;
+  const id = normalizeId(body.id);
+
+  if (value.method !== undefined && typeof value.method !== "string") {
+    throw new Error(`line ${lineNumber}: envelope method must be a string`);
+  }
+  if (value.id !== undefined && normalizeId(value.id) === undefined) {
+    throw new Error(`line ${lineNumber}: envelope id must be a string, number, or null`);
+  }
+  if (value.method !== undefined && value.method !== method) {
+    throw new Error(`line ${lineNumber}: envelope method does not match body method`);
+  }
+  if (value.id !== undefined && !sameId(normalizeId(value.id), id)) {
+    throw new Error(`line ${lineNumber}: envelope id does not match body id`);
+  }
+
   return {
     timestamp: value.timestamp,
     direction: value.direction,
-    method: typeof value.method === "string" ? value.method : undefined,
-    id: normalizeId(value.id),
-    body: value.body as JsonRpcMessage
+    method,
+    id,
+    body
   };
 }
 
@@ -94,4 +112,50 @@ function normalizeId(value: JsonValue | undefined): string | number | null | und
     return value;
   }
   return undefined;
+}
+
+function validateJsonRpcBody(body: JsonRpcMessage, lineNumber: number): void {
+  const label = `line ${lineNumber}: JSON-RPC body`;
+  if (body.jsonrpc !== "2.0") {
+    throw new Error(`${label} jsonrpc must be \"2.0\"`);
+  }
+
+  const hasMethod = Object.hasOwn(body, "method");
+  const hasResult = Object.hasOwn(body, "result");
+  const hasError = Object.hasOwn(body, "error");
+  if (hasMethod) {
+    if (typeof body.method !== "string") {
+      throw new Error(`${label} method must be a string`);
+    }
+    if (hasResult || hasError) {
+      throw new Error(`${label} request cannot contain result or error`);
+    }
+    if (body.params !== undefined && (typeof body.params !== "object" || body.params === null)) {
+      throw new Error(`${label} params must be an object or array`);
+    }
+  } else {
+    if (normalizeId(body.id) === undefined) {
+      throw new Error(`${label} response requires a string, number, or null id`);
+    }
+    if (hasResult === hasError) {
+      throw new Error(`${label} response must contain exactly one of result or error`);
+    }
+    if (hasError && (!body.error || typeof body.error !== "object" || Array.isArray(body.error))) {
+      throw new Error(`${label} error must be an object`);
+    }
+    if (hasError) {
+      const error = body.error as { code?: JsonValue; message?: JsonValue };
+      if (typeof error.code !== "number" || !Number.isInteger(error.code) || typeof error.message !== "string") {
+        throw new Error(`${label} error requires an integer code and string message`);
+      }
+    }
+  }
+
+  if (body.id !== undefined && normalizeId(body.id) === undefined) {
+    throw new Error(`${label} id must be a string, number, or null`);
+  }
+}
+
+function sameId(left: string | number | null | undefined, right: string | number | null | undefined): boolean {
+  return left === right;
 }
