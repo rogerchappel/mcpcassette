@@ -18,6 +18,15 @@ npm install
 npm run build
 ```
 
+## Install from npm
+
+Published releases are available from npm:
+
+```sh
+npm install --global @rogerchappel/mcpcassette
+mcpcassette --help
+```
+
 ## CLI Quickstart
 
 Print CLI help from the built package:
@@ -67,7 +76,7 @@ documents needed for release review: `README.md`, `LICENSE`, `SECURITY.md`, `CHA
 Run `npm run package:smoke` before publishing to confirm those files are still
 present in the tarball. The package smoke builds the project, runs
 `npm pack --dry-run`, and fails if required runtime or support files are missing
-from the npm file list.
+or compiled tests appear in the npm file list.
 
 ## Verification
 
@@ -97,6 +106,16 @@ repository hygiene wrapper.
 
 The package metadata points at the public GitHub repository so npm and generated
 provenance link back to the source.
+
+## Release process
+
+Release tags must exactly match the version in `package.json` (for example,
+package version `0.1.0` is released from tag `v0.1.0`). The tag workflow runs
+all release checks, creates one tarball, publishes that validated tarball to npm
+with trusted publishing and provenance, and creates the GitHub release only
+after publishing succeeds. The npm trusted publisher must be configured for
+this repository and `.github/workflows/release.yml`; no long-lived npm token is
+used by the workflow.
 ## CLI Help Smoke
 
 Confirm the packaged command starts and prints its help text before relying on a release tarball or downstream automation:
