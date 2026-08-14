@@ -30,6 +30,8 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
           registry-url: https://registry.npmjs.org
+      - name: Install npm with trusted publishing support
+        run: npm install --global npm@11.5.1
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Install ReleaseBox
