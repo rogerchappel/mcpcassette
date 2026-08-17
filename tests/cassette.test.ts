@@ -34,6 +34,26 @@ test("uses JSON-RPC bodies as the canonical source for summary metadata", () => 
   });
 });
 
+test("classifies JSON-RPC message shapes independently of direction", () => {
+  const entries = parseCassette([
+    JSON.stringify({ timestamp: "2026-01-01T00:00:00.000Z", direction: "server", body: { jsonrpc: "2.0", id: 7, method: "roots/list" } }),
+    JSON.stringify({ timestamp: "2026-01-01T00:00:00.050Z", direction: "server", body: { jsonrpc: "2.0", method: "notifications/message" } }),
+    JSON.stringify({ timestamp: "2026-01-01T00:00:00.100Z", direction: "client", body: { jsonrpc: "2.0", id: 7, result: { roots: [] } } }),
+    JSON.stringify({ timestamp: "2026-01-01T00:00:00.150Z", direction: "client", body: { jsonrpc: "2.0", id: 8, error: { code: -32601, message: "Method not found" } } })
+  ].join("\n"));
+
+  assert.deepEqual(summarizeCassette("bidirectional", entries), {
+    path: "bidirectional",
+    entries: 4,
+    clientMessages: 2,
+    serverMessages: 2,
+    requests: 1,
+    responses: 2,
+    notifications: 1,
+    methods: { "roots/list": 1, "notifications/message": 1 }
+  });
+});
+
 test("rejects envelope metadata that contradicts the JSON-RPC body", () => {
   const base = { timestamp: "2026-01-01T00:00:00.000Z", direction: "client" };
   assert.throws(
