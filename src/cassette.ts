@@ -86,11 +86,11 @@ export function summarizeCassette(path: string, entries: CassetteEntry[]): Casse
     if (entry.method) {
       methods[entry.method] = (methods[entry.method] ?? 0) + 1;
     }
-    if (entry.direction === "client" && entry.method && entry.id !== undefined) {
+    if (entry.method && entry.id !== undefined) {
       requests += 1;
-    } else if (entry.direction === "client" && entry.method) {
+    } else if (entry.method) {
       notifications += 1;
-    } else if (entry.direction === "server" && (entry.body.result !== undefined || entry.body.error !== undefined)) {
+    } else if (Object.hasOwn(entry.body, "result") || Object.hasOwn(entry.body, "error")) {
       responses += 1;
     }
   }
