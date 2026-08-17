@@ -69,6 +69,11 @@ or array `params`, and an optional string, number, or null `id`) or response (an
 `code` and string `message`. Body-only entries are supported and are preferred
 for hand-authored fixtures.
 
+Summary request, response, and notification counts come from those validated
+body shapes, regardless of whether the message travels from client to server or
+server to client. The separate `clientMessages` and `serverMessages` counts
+retain the transport direction.
+
 ## Package contents
 
 The npm package allowlist includes the runtime files plus the public support
