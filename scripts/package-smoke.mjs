@@ -27,4 +27,11 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
+const forbiddenEntries = ["dist/tests/"];
+const included = forbiddenEntries.filter((entry) => output.includes(entry));
+if (included.length > 0) {
+  process.stderr.write(`package smoke found forbidden entries:\n${included.join("\n")}\n`);
+  process.exit(1);
+}
+
 process.stdout.write("package smoke passed\n");
