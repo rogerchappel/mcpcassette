@@ -9,27 +9,28 @@ This is a v0.1.0 developer tool. Treat the cassette schema and CLI output as
 early-stage, pin versions in automation, and inspect generated summaries before
 using them as release evidence.
 
-## Install from a checkout
+## Install the current source
+
+The package is not published to npm yet. Clone the repository and use the
+locked pnpm dependencies until a release appears in the registry:
 
 ```sh
 git clone https://github.com/rogerchappel/mcpcassette.git
 cd mcpcassette
-npm install
+corepack enable
+pnpm install --frozen-lockfile
 npm run build
+node dist/src/cli.js --help
+node dist/src/cli.js summarize fixtures/basic.jsonl
 ```
 
-## Install from npm
-
-Published releases are available from npm:
-
-```sh
-npm install --global @rogerchappel/mcpcassette
-mcpcassette --help
-```
+After `npm view @rogerchappel/mcpcassette version` returns a version, the
+release can instead be installed with
+`npm install --global @rogerchappel/mcpcassette`.
 
 ## CLI Quickstart
 
-Print CLI help from the built package:
+Print CLI help from the built checkout:
 
 ```sh
 node dist/src/cli.js --help

@@ -32,7 +32,8 @@
     "test": "node --import tsx --test tests/*.test.ts",
     "smoke": "bash scripts/smoke.sh",
     "package:smoke": "npm run build && node scripts/package-smoke.mjs",
-    "release:check": "npm run check && npm test && npm run build && npm run smoke && npm run package:smoke",
+    "docs:smoke": "node scripts/docs-smoke.mjs",
+    "release:check": "npm run check && npm test && npm run build && npm run smoke && npm run package:smoke && npm run docs:smoke",
     "prepack": "npm run build"
   },
   "keywords": [
