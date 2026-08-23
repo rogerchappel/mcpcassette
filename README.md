@@ -58,8 +58,12 @@ belong in follow-up milestones.
 
 ## Cassette schema
 
-Each non-empty JSONL line is an object with an ISO-style `timestamp`, a
-`direction` of `client` or `server`, and a JSON-RPC 2.0 `body`. The body is the
+Each non-empty JSONL line is an object with a canonical ISO 8601 UTC
+`timestamp` in the format emitted by `Date.prototype.toISOString()` (for
+example, `2026-01-01T00:00:00.000Z`), a `direction` of `client` or `server`,
+and a JSON-RPC 2.0 `body`. Calendar dates and times must exist; offsets,
+omitted milliseconds, and other non-canonical representations are rejected.
+The body is the
 canonical source for `method` and `id`. Writers may repeat `method` or `id` on
 the outer object for compatibility, but any repeated value must exactly match
 the body or parsing fails with the line number.

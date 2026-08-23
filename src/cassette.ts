@@ -19,6 +19,9 @@ export function parseCassetteLine(line: string, lineNumber: number): CassetteEnt
   if (typeof value.timestamp !== "string") {
     throw new Error(`line ${lineNumber}: missing timestamp`);
   }
+  if (!isCanonicalIsoTimestamp(value.timestamp)) {
+    throw new Error(`line ${lineNumber}: timestamp must be a valid ISO 8601 UTC timestamp`);
+  }
   if (value.direction !== "client" && value.direction !== "server") {
     throw new Error(`line ${lineNumber}: direction must be client or server`);
   }
@@ -51,6 +54,15 @@ export function parseCassetteLine(line: string, lineNumber: number): CassetteEnt
     id,
     body
   };
+}
+
+function isCanonicalIsoTimestamp(value: string): boolean {
+  if (!/^(?:\d{4}|[+-]\d{6})-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u.test(value)) {
+    return false;
+  }
+
+  const parsed = new Date(value);
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString() === value;
 }
 
 export async function readCassette(path: string): Promise<CassetteEntry[]> {

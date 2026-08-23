@@ -1,7 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { parseCassette, summarizeCassette } from "../src/index.js";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { entryFromMessage, parseCassette, summarizeCassette } from "../src/index.js";
 
 test("summarizes requests and responses from a JSONL cassette", () => {
   const entries = parseCassette([
@@ -83,6 +86,31 @@ test("validates JSON-RPC body shape with line-specific diagnostics", () => {
   }
 });
 
+test("accepts canonical timestamps emitted by entryFromMessage", () => {
+  const entry = entryFromMessage("client", { jsonrpc: "2.0", method: "tools/list" });
+  assert.deepEqual(parseCassette(JSON.stringify(entry)), [entry]);
+});
+
+test("rejects malformed and nonexistent timestamps with line-specific diagnostics", () => {
+  const entry = (timestamp: string) => JSON.stringify({
+    timestamp,
+    direction: "client",
+    body: { jsonrpc: "2.0", method: "tools/list" }
+  });
+
+  for (const timestamp of [
+    "not-a-date",
+    "2026-02-29T00:00:00.000Z",
+    "2026-01-01T00:00:00Z",
+    "2026-01-01T00:00:00.000+00:00"
+  ]) {
+    assert.throws(
+      () => parseCassette(`\n${entry(timestamp)}`),
+      /line 2: timestamp must be a valid ISO 8601 UTC timestamp/
+    );
+  }
+});
+
 test("CLI exposes help text without requiring a cassette", () => {
   const result = spawnSync(process.execPath, ["--import", "tsx", "src/cli.ts", "--help"], {
     cwd: new URL("..", import.meta.url),
@@ -118,4 +146,27 @@ test("CLI rejects unknown formats before release smoke output is trusted", () =>
 
   assert.equal(result.status, 1);
   assert.match(result.stderr, /--format must be text or json/);
+});
+
+test("built CLI rejects invalid timestamps without writing a summary", () => {
+  const directory = mkdtempSync(join(tmpdir(), "mcpcassette-invalid-timestamp-"));
+  const cassette = join(directory, "invalid.jsonl");
+  writeFileSync(cassette, `${JSON.stringify({
+    timestamp: "2026-02-29T00:00:00.000Z",
+    direction: "client",
+    body: { jsonrpc: "2.0", method: "tools/list" }
+  })}\n`);
+
+  try {
+    const result = spawnSync(process.execPath, ["dist/src/cli.js", "summarize", cassette, "--format", "json"], {
+      cwd: new URL("..", import.meta.url),
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 1);
+    assert.equal(result.stdout, "");
+    assert.match(result.stderr, /line 1: timestamp must be a valid ISO 8601 UTC timestamp/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
