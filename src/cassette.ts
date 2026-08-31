@@ -5,6 +5,11 @@ import { parseJsonObject } from "./json.js";
 import type { CassetteEntry, CassetteSummary, JsonRpcMessage, JsonValue } from "./types.js";
 
 export function entryFromMessage(direction: CassetteEntry["direction"], body: JsonRpcMessage, timestamp = new Date().toISOString()): CassetteEntry {
+  if (!isCanonicalIsoTimestamp(timestamp)) {
+    throw new Error("timestamp must be a valid ISO 8601 UTC timestamp");
+  }
+  validateJsonRpcBody(body, "JSON-RPC body");
+
   return {
     timestamp,
     direction,
@@ -30,7 +35,7 @@ export function parseCassetteLine(line: string, lineNumber: number): CassetteEnt
   }
 
   const body = value.body as JsonRpcMessage;
-  validateJsonRpcBody(body, lineNumber);
+  validateJsonRpcBody(body, `line ${lineNumber}: JSON-RPC body`);
   const method = typeof body.method === "string" ? body.method : undefined;
   const id = normalizeId(body.id);
 
@@ -126,8 +131,7 @@ function normalizeId(value: JsonValue | undefined): string | number | null | und
   return undefined;
 }
 
-function validateJsonRpcBody(body: JsonRpcMessage, lineNumber: number): void {
-  const label = `line ${lineNumber}: JSON-RPC body`;
+function validateJsonRpcBody(body: JsonRpcMessage, label: string): void {
   if (body.jsonrpc !== "2.0") {
     throw new Error(`${label} jsonrpc must be \"2.0\"`);
   }
