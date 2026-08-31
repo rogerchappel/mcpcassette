@@ -74,6 +74,12 @@ or array `params`, and an optional string, number, or null `id`) or response (an
 `code` and string `message`. Body-only entries are supported and are preferred
 for hand-authored fixtures.
 
+The public `entryFromMessage` helper validates its JSON-RPC body and explicit
+timestamp before returning an entry. Invalid messages therefore fail with a
+`JSON-RPC body ...` diagnostic, and invalid or non-canonical timestamps fail
+with `timestamp must be a valid ISO 8601 UTC timestamp`, before callers can
+pass an invalid entry to `formatCassette` or `writeCassette`.
+
 Summary request, response, and notification counts come from those validated
 body shapes, regardless of whether the message travels from client to server or
 server to client. The separate `clientMessages` and `serverMessages` counts
