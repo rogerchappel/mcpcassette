@@ -4,7 +4,7 @@ import { spawnSync } from "node:child_process";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { entryFromMessage, parseCassette, summarizeCassette } from "../src/index.js";
+import { entryFromMessage, formatCassette, parseCassette, summarizeCassette } from "../src/index.js";
 
 test("summarizes requests and responses from a JSONL cassette", () => {
   const entries = parseCassette([
@@ -89,6 +89,34 @@ test("validates JSON-RPC body shape with line-specific diagnostics", () => {
 test("accepts canonical timestamps emitted by entryFromMessage", () => {
   const entry = entryFromMessage("client", { jsonrpc: "2.0", method: "tools/list" });
   assert.deepEqual(parseCassette(JSON.stringify(entry)), [entry]);
+});
+
+test("round-trips every supported message shape through public writer helpers", () => {
+  const entries = [
+    entryFromMessage("client", { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }, "2026-01-01T00:00:00.000Z"),
+    entryFromMessage("client", { jsonrpc: "2.0", method: "notifications/initialized" }, "2026-01-01T00:00:00.100Z"),
+    entryFromMessage("server", { jsonrpc: "2.0", id: 1, result: { tools: [] } }, "2026-01-01T00:00:00.200Z"),
+    entryFromMessage("server", { jsonrpc: "2.0", id: 2, error: { code: -32601, message: "Method not found" } }, "2026-01-01T00:00:00.300Z")
+  ];
+
+  assert.deepEqual(parseCassette(formatCassette(entries)), entries);
+});
+
+test("entryFromMessage rejects bodies and timestamps that cannot be parsed", () => {
+  for (const [body, message] of [
+    [{ jsonrpc: "1.0", method: "tools/list" }, 'JSON-RPC body jsonrpc must be "2.0"'],
+    [{ jsonrpc: "2.0", method: 1 }, "JSON-RPC body method must be a string"],
+    [{ jsonrpc: "2.0", id: 1 }, "JSON-RPC body response must contain exactly one of result or error"]
+  ] as const) {
+    assert.throws(() => entryFromMessage("client", body as never), new RegExp(message.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  }
+
+  for (const timestamp of ["not-a-date", "2026-02-29T00:00:00.000Z", "2026-01-01T00:00:00Z"]) {
+    assert.throws(
+      () => entryFromMessage("client", { jsonrpc: "2.0", method: "tools/list" }, timestamp),
+      /timestamp must be a valid ISO 8601 UTC timestamp/
+    );
+  }
 });
 
 test("rejects malformed and nonexistent timestamps with line-specific diagnostics", () => {
