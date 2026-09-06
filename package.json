@@ -45,9 +45,6 @@
   ],
   "author": "Roger Chappel",
   "license": "MIT",
-  "dependencies": {
-    "commander": "^12.1.0"
-  },
   "devDependencies": {
     "@types/node": "^22.10.2",
     "tsx": "^4.19.2",
