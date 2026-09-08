@@ -117,8 +117,10 @@ npm run release:check
 ```
 
 `release:check` runs type-checking, tests, build, fixture smoke coverage, and a
-package contents assertion. `scripts/validate.sh` remains available as a local
-repository hygiene wrapper.
+package contents assertion. The TypeScript project intentionally loads only
+Node ambient types, and the release check verifies that unrelated `@types`
+packages in an ancestor directory cannot affect the build.
+`scripts/validate.sh` remains available as a local repository hygiene wrapper.
 
 The package metadata points at the public GitHub repository so npm and generated
 provenance link back to the source.
