@@ -30,10 +30,11 @@
     "check": "tsc --noEmit",
     "pretest": "npm run build",
     "test": "node --import tsx --test tests/*.test.ts",
+    "test:type-scope": "bash scripts/check-type-scope.sh",
     "smoke": "bash scripts/smoke.sh",
     "package:smoke": "npm run build && node scripts/package-smoke.mjs",
     "docs:smoke": "node scripts/docs-smoke.mjs",
-    "release:check": "npm run check && npm test && npm run build && npm run smoke && npm run package:smoke && npm run docs:smoke",
+    "release:check": "npm run check && npm test && npm run build && npm run smoke && npm run package:smoke && npm run docs:smoke && npm run test:type-scope",
     "prepack": "npm run build"
   },
   "keywords": [
